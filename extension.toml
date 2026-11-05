@@ -1,0 +1,70 @@
+[extension]
+id = "vibe"
+name = "Mistral Vibe"
+version = "0.1.0"
+node = ">=0.4.15"
+publisher = "aurelio"
+summary = "Mistral's coding agent: one headless run per wake, in an isolated home."
+
+[client]
+binaries = ["vibe"]
+protocol = "vibe-stream"
+home_env = "HOME"
+api_keys = ["MISTRAL_API_KEY"]
+
+[client.install]
+from = "pypi"
+package = "mistral-vibe"
+
+[client.sign_in]
+how = "/vibe add"
+
+[client.key]
+secret = "vibe.key"
+env = "MISTRAL_API_KEY"
+
+[client.run]
+prompt = "arg"
+args = ["-p", "{prompt}", "--output", "streaming", "--output-dir", "{home}/.vibe/run", "--trust", "{session}", "{model}", "{permissions}", "{add_dirs}"]
+resume = ["--resume", "{value}"]
+model = ["--model", "{value}"]
+add_dir = ["--add-dir", "{value}"]
+
+[client.run.env]
+VIBE_HOME = "{home}/.vibe"
+
+[client.run.permissions]
+default = ["--agent", "auto-approve"]
+auto = ["--agent", "auto-approve"]
+
+[client.instructions]
+via = "file"
+file = ".vibe/AGENTS.md"
+
+[client.mcp]
+via = "config-file"
+file = ".vibe/config.toml"
+key = "mcp_servers"
+settings = { enable_auto_update = false, enable_update_checks = false }
+
+[client.limits]
+words = ["rate limit", "rate_limit", "too many requests", "capacity exceeded", "quota exceeded", "usage limit"]
+
+[permissions]
+secrets = ["vibe.key"]
+
+[[credentials]]
+id = "key"
+title = "Mistral API key"
+help = "Create an API key at console.mistral.ai. Pointman seals it in the vault and gives it only to this client's runs."
+item = "vibe.key"
+value = '\S{8,512}'
+placeholder = "Mistral API key"
+
+[[commands]]
+kind = "vibe.add"
+title = "Add a Mistral API key"
+params = { type = "object", properties = {}, additionalProperties = false }
+slash = "add"
+form = "key"
+summary = "Set up Mistral Vibe once for every agent on this machine"
