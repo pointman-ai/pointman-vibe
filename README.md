@@ -1,8 +1,8 @@
-# Pointman Mistral Vibe client
+# Pointman Mistral Vibe harness
 
-A client extension for [Mistral Vibe](https://github.com/mistralai/mistral-vibe),
+A harness extension for [Mistral Vibe](https://github.com/mistralai/mistral-vibe),
 Mistral's coding agent. Repository: `pointman-ai/pointman-vibe`.
-Requires Pointman node 0.4.15 or newer, with the `vibe-stream` decoder and the
+Requires Pointman node 0.6.0 or newer, with the `vibe-stream` decoder and the
 PyPI installer.
 
 ## Connect once
@@ -19,7 +19,7 @@ Pointman installs the `mistral-vibe` package from PyPI when needed.
 
 Each agent gets its own `HOME`, and runs set `VIBE_HOME={home}/.vibe`, so
 Vibe's config, agent instructions, sessions and logs stay inside that agent's
-home. No existing Vibe login, config or another client's credentials are copied.
+home. No existing Vibe login, config or another harness's credentials are copied.
 
 ## Runs
 

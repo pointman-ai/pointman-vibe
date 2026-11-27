@@ -1,6 +1,6 @@
 # Icon source
 
-The vendor mark is used to identify its coding client in Pointman.
+The vendor mark is used to identify its coding harness in Pointman.
 
 Source: Mistral Vibe's own icon in the official `mistralai/mistral-vibe`
 repository, `distribution/zed/icons/mistral_vibe.svg`, at commit

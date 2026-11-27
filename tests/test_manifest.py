@@ -11,23 +11,23 @@ class ManifestContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest = tomllib.loads((ROOT / "extension.toml").read_text())
-        cls.client = cls.manifest["client"]
+        cls.harness = cls.manifest["harness"]
 
     def test_extension(self):
         ext = self.manifest["extension"]
         self.assertEqual(ext["id"], "vibe")
         self.assertEqual(ext["name"], "Mistral Vibe")
-        self.assertEqual(ext["version"], "0.1.0")
-        self.assertEqual(ext["node"], ">=0.4.15")
+        self.assertEqual(ext["version"], "0.2.0")
+        self.assertEqual(ext["node"], ">=0.6,<1")
         self.assertEqual(ext["publisher"], "aurelio")
 
     def test_install_and_protocol(self):
-        self.assertEqual(self.client["protocol"], "vibe-stream")
-        self.assertEqual(self.client["install"], {"from": "pypi", "package": "mistral-vibe"})
-        self.assertEqual(self.client["binaries"], ["vibe"])
+        self.assertEqual(self.harness["protocol"], "vibe-stream")
+        self.assertEqual(self.harness["install"], {"from": "pypi", "package": "mistral-vibe"})
+        self.assertEqual(self.harness["binaries"], ["vibe"])
 
     def test_headless_streaming_run(self):
-        run = self.client["run"]
+        run = self.harness["run"]
         self.assertEqual(run["prompt"], "arg")
         self.assertEqual(run["args"][:7], ["-p", "{prompt}", "--output", "streaming", "--output-dir", "{home}/.vibe/run", "--trust"])
         for slot in ("{session}", "{model}", "{permissions}", "{add_dirs}"):
@@ -40,28 +40,28 @@ class ManifestContract(unittest.TestCase):
         self.assertEqual(run["add_dir"], ["--add-dir", "{value}"])
 
     def test_home_isolation(self):
-        self.assertEqual(self.client["home_env"], "HOME")
-        self.assertEqual(self.client["run"]["env"], {"VIBE_HOME": "{home}/.vibe"})
-        self.assertEqual(self.client["instructions"], {"via": "file", "file": ".vibe/AGENTS.md"})
-        mcp = self.client["mcp"]
+        self.assertEqual(self.harness["home_env"], "HOME")
+        self.assertEqual(self.harness["run"]["env"], {"VIBE_HOME": "{home}/.vibe"})
+        self.assertEqual(self.harness["instructions"], {"via": "file", "file": ".vibe/AGENTS.md"})
+        mcp = self.harness["mcp"]
         self.assertEqual((mcp["via"], mcp["file"], mcp["key"]), ("config-file", ".vibe/config.toml", "mcp_servers"))
         self.assertEqual(mcp["settings"], {"enable_auto_update": False, "enable_update_checks": False})
 
     def test_only_supported_modes(self):
-        modes = self.client["run"]["permissions"]
+        modes = self.harness["run"]["permissions"]
         self.assertEqual(set(modes), {"default", "auto"})
         self.assertEqual(modes["default"], ["--agent", "auto-approve"])
         self.assertEqual(modes["auto"], ["--agent", "auto-approve"])
 
     def test_limit_words(self):
-        words = self.client["limits"]["words"]
+        words = self.harness["limits"]["words"]
         for word in ("rate limit", "too many requests", "quota exceeded"):
             self.assertIn(word, words)
 
     def test_one_vault_form_supplies_every_agents_run(self):
-        self.assertEqual(self.client["api_keys"], ["MISTRAL_API_KEY"])
-        self.assertEqual(self.client["key"], {"secret": "vibe.key", "env": "MISTRAL_API_KEY"})
-        self.assertEqual(self.client["sign_in"], {"how": "/vibe add"})
+        self.assertEqual(self.harness["api_keys"], ["MISTRAL_API_KEY"])
+        self.assertEqual(self.harness["key"], {"secret": "vibe.key", "env": "MISTRAL_API_KEY"})
+        self.assertEqual(self.harness["sign_in"], {"how": "/vibe add"})
         self.assertEqual(self.manifest["permissions"]["secrets"], ["vibe.key"])
         (cred,) = self.manifest["credentials"]
         self.assertEqual((cred["id"], cred["item"], cred["value"]), ("key", "vibe.key", r"\S{8,512}"))
